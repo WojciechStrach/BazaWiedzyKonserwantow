@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const neo4j = require('neo4j');
 const db = new neo4j.GraphDatabase('http://neo4j:baza@localhost:7474');
+const productModel = require('./models/product');
 
 const app = express();
 
@@ -12,7 +13,7 @@ const urlencodedParser = bodyParser.json({ extended: false });
 
 
 app.get('/', function(req, res){
-    res.send('<h1>Knowledge database API</h1>');
+    res.status(200).send('<h1>Knowledge database API</h1>');
 });
 
 app.post('/search', urlencodedParser, function(req,res){
@@ -29,26 +30,27 @@ app.post('/search', urlencodedParser, function(req,res){
 
     }else{
 
-        searchValue = "'" + body.search + "'";
-        console.log(searchValue);
+        searchValue = body.search;
+        
+        var product = new productModel.ProductModel();
 
         db.cypher({
-            query: 'MATCH (x:Nazwa {Nazwa: {input}})' +
-                   'OPTIONAL MATCH (z)-[a*0..2]->(x)-[r*0..2]->(y)' +
-                   'return z,y',
+            query: 'MATCH (x:Nazwa {Nazwa: {search}})' +
+                   'RETURN x',
             params: { 
-                input: 'Pepsi Max',
+                search: searchValue,
             },
         }, function (err, results) {
-            if (err) throw err;
+            if (err) {
+                console.log(err);
+            }
             var result = results[0];
             if (!result) {
-                res.json();
+                res.status(204);
             } else {
-                for(var values in results){
-                    console.log(values.Nazwa);
-                }
-                res.json(results);
+                let resultJson = JSON.stringify(results,null,4);
+                console.log(resultJson.x.properties);
+                product.setProductName();
             }
         });
     }   
