@@ -84,11 +84,61 @@ app.post('/search', urlencodedParser, function(req,res){
                             preservativesTempObject.push(tempObject);
                         };
 
-                        product.setPreservatives(preservativesTempObject);
+                        let diseasesTempObject = [];
 
-                        console.log(JSON.stringify(product));
+                        for (let preservativeSign in preservativesTempObject){
+                            if (preservativesTempObject.hasOwnProperty(preservativeSign)) {
+
+                                db.cypher({
+                                    query: 'MATCH (x:Oznaczenie {Oznaczenie:{diseaseSearch}})' +
+                                           'OPTIONAL MATCH (x)-[r:Może_powodować]->(y)' +
+                                           'RETURN y',
+                                    params: { 
+                                        diseaseSearch: preservativesTempObject[preservativeSign].Oznaczenie,
+                                    },
+                                }, function (diseasesErr, diseasesResults) {
                         
-                    }
+                                    if (diseasesErr) {
+                                        console.log(diseasesErr);
+                                        res.status(400).send('<h4>Unexpecting error occured ' + diseasesErr + '</h4>');
+                                    }
+                        
+                                    var diseaseResult = diseasesResults[0];
+                                    if (!diseaseResult) {
+                                        
+                                    } else {
+
+                                        for(let nullValues in diseasesResults){
+                                            if(diseasesResults[nullValues].y === null){
+                                                let index = diseasesResults.indexOf(diseasesResults[nullValues].y);
+                                                console.log(index);
+                                            }
+                                        }
+
+                                        // for (let i=0; i<diseasesResults.length; i++){
+                                        //     let tempObject = {};
+                                        //     for (let disease in diseasesResults[i].y.properties) {                                                              
+                                        //         tempObject[disease] = diseasesResults[i].y.properties[disease];
+                                        //         console.log(disease);
+                                        //     };
+                                            
+                                        //     diseasesTempObject.push(tempObject);
+                                        // };
+                                    }
+
+
+
+                                 
+                                    }
+                                )};
+                        
+                            }
+                            
+                            product.setPreservatives(preservativesTempObject);
+                            product.setDiseases(diseasesTempObject);
+
+                            //console.log(JSON.stringify(product));
+                        }
 
                 }
                 )};    
