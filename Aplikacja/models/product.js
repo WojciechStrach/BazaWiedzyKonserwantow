@@ -37,8 +37,8 @@ module.exports = {
             return this.productType;
         }
         //
-        this.setPreservatives = function(preservatives){
-            this.preservatives = preservatives;
+        this.setPreservatives = function(preservative){
+            this.preservatives = preservative;
         }
         this.getPreservatives = function(){
             return this.preservatives;

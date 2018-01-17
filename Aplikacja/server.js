@@ -73,15 +73,20 @@ app.post('/search', urlencodedParser, function(req,res){
                     if (!preservativesResult) {
                         
                     } else {
-                        console.log(preservativesResults[0].y.properties);
-                        
+
+                        let preservativesTempObject = [];
+                                                
                         for (let i=0; i<preservativesResults.length; i++){
-                            for (var preservative in preservativesResults[i].y.properties) {
-                                console.log("Item name: "+preservative.Opis);
-                                // console.log("Source: "+result[i][name].sourceUuid);
-                                // console.log("Target: "+result[i][name].targetUuid);
-                            }
-                        }
+                            let tempObject = {};
+                            for (let preservative in preservativesResults[i].y.properties) {                                                              
+                                tempObject[preservative] = preservativesResults[i].y.properties[preservative];
+                            };
+                            preservativesTempObject.push(tempObject);
+                        };
+
+                        product.setPreservatives(preservativesTempObject);
+
+                        console.log(JSON.stringify(product));
                         
                     }
 
