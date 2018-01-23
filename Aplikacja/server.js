@@ -16,7 +16,7 @@ app.get('/', function(req, res){
     res.status(200).send('<h1>Knowledge database API</h1>');
 });
 
-app.post('/search', urlencodedParser, function(req,res){
+app.post('/search/product', urlencodedParser, function(req,res){
 
     var body = req.body;
     var searchValue;
@@ -228,6 +228,10 @@ app.post('/search', urlencodedParser, function(req,res){
 
 });
 
-app.listen(3000, function(){
-    console.log('Server Started on port 3000');
+app.post('/search/preservative', urlencodedParser, function(req,res){
+
+});
+
+app.listen(3000, function(err){
+        console.log('Server Started on port 3000');
 });
