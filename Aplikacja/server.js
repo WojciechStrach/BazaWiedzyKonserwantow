@@ -126,7 +126,7 @@ app.post('/search', urlencodedParser, function(req,res){
                                             for(let y=0; y<filteredDiseaseResults.length; y++){
                                                 for(let filter in filteredDiseaseResults[y].properties){
                                                     diseasesTempObject.push(filteredDiseaseResults[y].properties[filter]);
-                                                    console.log(diseasesTempObject);
+                                                    //console.log(diseasesTempObject);
                                                 }
                                             }
 
@@ -150,13 +150,69 @@ app.post('/search', urlencodedParser, function(req,res){
 
                             diseasesCallback(function(){
 
-                                console.log('________________________');
-                                console.log(diseasesTempObject);
+                                //console.log('________________________');
+                                //console.log(diseasesTempObject);
 
                                 product.setPreservatives(preservativesTempObject);
-                                product.setDiseases(diseasesTempObject);
 
-                                //console.log(JSON.stringify(product));
+                                let uniqueDiseases = []
+                                for(let p = 0;p < diseasesTempObject.length; p++){
+                                    if(uniqueDiseases.indexOf(diseasesTempObject[p]) == -1){
+                                       uniqueDiseases.push(diseasesTempObject[p])
+                                    }
+                                }
+
+                                product.setDiseases(uniqueDiseases);
+
+                                db.cypher({
+                                    query: 'MATCH (x:Nazwa {Nazwa: {ownerSearch}})' +
+                                           'MATCH (x)-[:Jest_instancją]->(y)' +
+                                           'MATCH (y)<-[:Jest_właścicielem]-(z)' +
+                                           'RETURN z' ,
+                                    params: { 
+                                        ownerSearch: searchValue,
+                                    },
+                                }, function (ownerErr, ownerResults) {
+                        
+                                    if (ownerErr) {
+                                        console.log(ownerErr);
+                                        res.status(400).send('<h4>Unexpecting error occured ' + ownerErr + '</h4>');
+                                    }
+                        
+                                    var ownerResult = ownerResults[0];
+                                    if (!ownerResult) {
+                                        
+                                    } else {
+                                        
+                                        product.setProductOwner(ownerResults[0].z.properties.Producent);
+
+                                        db.cypher({
+                                            query: 'MATCH (x:Nazwa {Nazwa: {typeSearch}})' +
+                                                   'MATCH (x)-[:Jest_instancją]->(y)' +
+                                                   'MATCH (y)-[:Jest_instancją]->(z)' +
+                                                   'RETURN z' ,
+                                            params: { 
+                                                typeSearch: searchValue,
+                                            },
+                                        }, function (typeErr, typeResults) {
+                                
+                                            if (typeErr) {
+                                                console.log(typeErr);
+                                                res.status(400).send('<h4>Unexpecting error occured ' + typeErr + '</h4>');
+                                            }
+                                
+                                            var typeResult = typeResults[0];
+                                            if (!typeResult) {
+                                                
+                                            } else {
+
+                                                product.setProductType(typeResults[0].z.properties.Rodzaj);
+
+                                                res.json(product);
+                                            }
+                                        });
+                                    }
+                                });
 
                             },preservativesTempObject.length);
                             
