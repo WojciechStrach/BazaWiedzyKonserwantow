@@ -85,59 +85,84 @@ app.post('/search', urlencodedParser, function(req,res){
                         };
 
                         let diseasesTempObject = [];
-
-                        for (let preservativeSign in preservativesTempObject){
-                            if (preservativesTempObject.hasOwnProperty(preservativeSign)) {
-
-                                db.cypher({
-                                    query: 'MATCH (x:Oznaczenie {Oznaczenie:{diseaseSearch}})' +
-                                           'OPTIONAL MATCH (x)-[r:Może_powodować]->(y)' +
-                                           'RETURN y',
-                                    params: { 
-                                        diseaseSearch: preservativesTempObject[preservativeSign].Oznaczenie,
-                                    },
-                                }, function (diseasesErr, diseasesResults) {
                         
-                                    if (diseasesErr) {
-                                        console.log(diseasesErr);
-                                        res.status(400).send('<h4>Unexpecting error occured ' + diseasesErr + '</h4>');
-                                    }
-                        
-                                    var diseaseResult = diseasesResults[0];
-                                    if (!diseaseResult) {
-                                        
-                                    } else {
 
-                                        for(let nullValues in diseasesResults){
-                                            if(diseasesResults[nullValues].y === null){
-                                                let index = diseasesResults.indexOf(diseasesResults[nullValues].y);
-                                                console.log(index);
+                        function diseasesCallback(_callback, tabLength){
+
+                            for (let preservativeSign in preservativesTempObject){
+                                
+                                if (preservativesTempObject.hasOwnProperty(preservativeSign)) {
+
+                                    db.cypher({
+                                        query: 'MATCH (x:Oznaczenie {Oznaczenie:{diseaseSearch}})' +
+                                            'OPTIONAL MATCH (x)-[r:Może_powodować]->(y)' +
+                                            'RETURN y',
+                                        params: { 
+                                            diseaseSearch: preservativesTempObject[preservativeSign].Oznaczenie,
+                                        },
+                                    }, function (diseasesErr, diseasesResults) {
+                            
+                                        if (diseasesErr) {
+                                            console.log(diseasesErr);
+                                            res.status(400).send('<h4>Unexpecting error occured ' + diseasesErr + '</h4>');
+                                        }
+                            
+                                        var diseaseResult = diseasesResults[0];
+                                        if (!diseaseResult) {
+                                            
+                                        } else {
+
+                                            let filteredDiseaseResults = [];
+                                            
+                                            for(let z=0; z<diseasesResults.length; z++){
+                                                for(let value in diseasesResults[z]){
+                                                    if(diseasesResults[z][value] !== null){
+                                                        filteredDiseaseResults.push(diseasesResults[z][value]);
+                                                    }
+                                                }
                                             }
+
+
+                                            for(let y=0; y<filteredDiseaseResults.length; y++){
+                                                for(let filter in filteredDiseaseResults[y].properties){
+                                                    diseasesTempObject.push(filteredDiseaseResults[y].properties[filter]);
+                                                    console.log(diseasesTempObject);
+                                                }
+                                            }
+
+                                            
+                                            tabLength--;
+                                            if (tabLength === 0) {
+                                                _callback();
+                                            }
+                                            
                                         }
 
-                                        // for (let i=0; i<diseasesResults.length; i++){
-                                        //     let tempObject = {};
-                                        //     for (let disease in diseasesResults[i].y.properties) {                                                              
-                                        //         tempObject[disease] = diseasesResults[i].y.properties[disease];
-                                        //         console.log(disease);
-                                        //     };
-                                            
-                                        //     diseasesTempObject.push(tempObject);
-                                        // };
-                                    }
 
 
+                                        
+                                        }
+                                    )};
+                                    
+                                }
 
-                                 
-                                    }
-                                )};
-                        
                             }
-                            
-                            product.setPreservatives(preservativesTempObject);
-                            product.setDiseases(diseasesTempObject);
 
-                            //console.log(JSON.stringify(product));
+                            diseasesCallback(function(){
+
+                                console.log('________________________');
+                                console.log(diseasesTempObject);
+
+                                product.setPreservatives(preservativesTempObject);
+                                product.setDiseases(diseasesTempObject);
+
+                                //console.log(JSON.stringify(product));
+
+                            },preservativesTempObject.length);
+                            
+                            
+
+                            
                         }
 
                 }

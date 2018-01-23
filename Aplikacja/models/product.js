@@ -50,5 +50,6 @@ module.exports = {
         this.getDiseases = function(){
             return this.diseases;
         }
+        //
     }    
 };
