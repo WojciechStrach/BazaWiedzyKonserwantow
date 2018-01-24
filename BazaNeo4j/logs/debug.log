@@ -3473,3 +3473,4 @@ Storage files: (filename : modification date - size)
 2018-01-24 09:26:21.178+0000 INFO [o.n.k.i.DiagnosticsManager] --- STARTED diagnostics for KernelDiagnostics:StoreFiles END ---
 2018-01-24 09:26:21.178+0000 INFO [o.n.k.i.DiagnosticsManager] --- SERVER STARTED START ---
 2018-01-24 09:26:21.773+0000 INFO [o.n.k.i.DiagnosticsManager] --- SERVER STARTED END ---
+2018-01-24 14:08:25.597+0000 WARN [o.n.k.i.c.MonitorGc] GC Monitor: Application threads blocked for 603100ms.

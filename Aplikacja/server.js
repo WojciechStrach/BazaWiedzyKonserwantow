@@ -408,6 +408,12 @@ app.post('/search/preservative', urlencodedParser, function(req,res){
 
 });
 
+app.post('/search/disease', urlencodedParser, function(req,res){
+
+    
+
+});
+
 app.listen(3000, function(err){
         console.log('Server Started on port 3000');
 });
