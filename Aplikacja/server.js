@@ -5,6 +5,7 @@ const neo4j = require('neo4j');
 const db = new neo4j.GraphDatabase('http://neo4j:baza@localhost:7474');
 const productModel = require('./models/product');
 const preservativeModel = require('./models/preservative');
+const diseaseModel = require('./models/disease');
 
 const app = express();
 
@@ -410,7 +411,81 @@ app.post('/search/preservative', urlencodedParser, function(req,res){
 
 app.post('/search/disease', urlencodedParser, function(req,res){
 
+    var body = req.body;
+    var searchValue;
+
+    if (typeof body.search === "undefined"){
+
+        let jsonString = JSON.stringify({"search":"query_that_you_want_to_search"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else{
+
+        searchValue = body.search;
+
+        var disease = new diseaseModel.DiseaseModel();
+
+        db.cypher({
+            query: 'MATCH (x:Choroba {Choroba: {diseaseSearch}})' +
+                   'RETURN x',
+            params: { 
+                diseaseSearch: searchValue,
+            },
+        }, function (err, results) {
+
+            if (err) {
+                console.log(err);
+                res.status(400).send('<h4>Unexpecting error occured ' + err + '</h4>');
+            }
+
+            var result = results[0];
+            if (!result) {
+                res.status(204).send();
+            } else {
+                disease.setDiseaseName(results[0].x.properties.Choroba);
+
+                db.cypher({
+                    query: 'MATCH (x:Choroba {Choroba: {diseasePreservativesSearch}})' +
+                           'MATCH (x)<-[:Może_powodować]-(y)' +
+                           'RETURN y',
+                    params: { 
+                        diseasePreservativesSearch: results[0].x.properties.Choroba,
+                    },
+                }, function (diseasePreservativesErr, diseasePreservativesResults) {
+        
+                    if (diseasePreservativesErr) {
+                        console.log(diseasePreservativesErr);
+                        res.status(400).send('<h4>Unexpecting error occured ' + diseasePreservativesErr + '</h4>');
+                    }
+        
+                    var diseasePreservativesResult = diseasePreservativesResults[0];
+                    if (!diseasePreservativesResult) {
+                        let diseasesEmptyTempTab = []
+                        disease.setDiseasePreservatives(diseasesEmptyTempTab);
+                        res.status(200).json(disease);
+                    } else {
+                        let diseasesTempTab = [];
+                        
+                        for(let i=0; i<diseasePreservativesResults.length; i++){
+                            let diseaseTempObject = {};
+                            diseaseTempObject['Oznaczenie'] = diseasePreservativesResults[i].y.properties.Oznaczenie;
+                            diseaseTempObject['NazwaZwyczajowa'] = diseasePreservativesResults[i].y.properties.Nazwa_zwyczajowa;
+                            diseaseTempObject['Opis'] = diseasePreservativesResults[i].y.properties.Opis;
+                            diseasesTempTab.push(diseaseTempObject);
+                        }
+
+                        disease.setDiseasePreservatives(diseasesTempTab);
+                        res.status(200).json(disease);
+                    }
+                });
+
     
+            }
+        });
+
+    }
 
 });
 
