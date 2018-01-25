@@ -3824,3 +3824,15 @@ Storage files: (filename : modification date - size)
 2018-01-25 12:39:27.829+0000 INFO [o.n.k.i.DiagnosticsManager] --- SERVER STARTED START ---
 2018-01-25 12:39:28.949+0000 WARN [o.n.k.i.c.MonitorGc] GC Monitor: Application threads blocked for 822ms.
 2018-01-25 12:39:29.556+0000 INFO [o.n.k.i.DiagnosticsManager] --- SERVER STARTED END ---
+2018-01-25 14:53:09.297+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Starting check pointing...
+2018-01-25 14:53:09.301+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Starting store flush...
+2018-01-25 14:53:09.341+0000 INFO [o.n.k.i.s.c.CountsTracker] About to rotate counts store at transaction 32 to [C:\Users\F3cro\Desktop\BazaWiedzyKonserwantow\BazaWiedzyKonserwantow\BazaNeo4j\neostore.counts.db.a], from [C:\Users\F3cro\Desktop\BazaWiedzyKonserwantow\BazaWiedzyKonserwantow\BazaNeo4j\neostore.counts.db.b].
+2018-01-25 14:53:09.373+0000 INFO [o.n.k.i.s.c.CountsTracker] Successfully rotated counts store at transaction 32 to [C:\Users\F3cro\Desktop\BazaWiedzyKonserwantow\BazaWiedzyKonserwantow\BazaNeo4j\neostore.counts.db.a], from [C:\Users\F3cro\Desktop\BazaWiedzyKonserwantow\BazaWiedzyKonserwantow\BazaNeo4j\neostore.counts.db.b].
+2018-01-25 14:53:09.385+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Store flush completed
+2018-01-25 14:53:09.385+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Starting appending check point entry into the tx log...
+2018-01-25 14:53:09.389+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Appending check point entry into the tx log completed
+2018-01-25 14:53:09.389+0000 INFO [o.n.k.i.t.l.c.CheckPointerImpl] Check Pointing triggered by scheduler for time threshold [32]:  Check pointing completed
+2018-01-25 14:53:09.389+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] Log Rotation [0]:  Starting log pruning.
+2018-01-25 14:53:09.389+0000 INFO [o.n.k.i.t.l.p.LogPruningImpl] Log Rotation [0]:  Log pruning complete.
+2018-01-25 18:09:29.575+0000 WARN [o.n.k.i.c.MonitorGc] GC Monitor: Application threads blocked for 10801665ms.
+2018-01-25 19:23:20.503+0000 WARN [o.n.k.i.c.MonitorGc] GC Monitor: Application threads blocked for 4427163ms.
