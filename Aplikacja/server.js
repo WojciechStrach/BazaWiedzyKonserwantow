@@ -489,6 +489,159 @@ app.post('/search/disease', urlencodedParser, function(req,res){
 
 });
 
+app.post('/search/product/hint', urlencodedParser, function(req,res){
+
+    var body = req.body;
+    var searchValue;
+
+    if (typeof body.hint === "undefined"){
+
+        let jsonString = JSON.stringify({"hint":"string_that_you_want_to_check_if_any_node_contains"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else{
+
+        searchValue = body.hint;
+
+        let hintArr = [];
+
+        db.cypher({
+            query: 'MATCH (x:Nazwa)' +
+                   'WHERE x.Nazwa CONTAINS {productHint}' +
+                   'RETURN x',
+            params: { 
+                productHint: searchValue,
+            },
+        }, function (err, results) {
+
+            if (err) {
+                console.log(err);
+                res.status(400).send('<h4>Unexpecting error occured ' + err + '</h4>');
+            }
+
+            var result = results[0];
+            if (!result) {
+                res.status(204).send();
+            } else {
+                for(let i=0; i<results.length; i++){
+                    hintArr.push(results[i].x.properties.Nazwa)
+                }
+                let hints = {
+                    hints: hintArr
+                }
+                res.status(200).send(hints);
+
+            }
+        });
+
+    }
+
+});
+
+app.post('/search/preservative/hint', urlencodedParser, function(req,res){
+
+    var body = req.body;
+    var searchValue;
+
+    if (typeof body.hint === "undefined"){
+
+        let jsonString = JSON.stringify({"hint":"string_that_you_want_to_check_if_any_node_contains"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else{
+
+        searchValue = body.hint;
+
+        let hintArr = [];
+
+        db.cypher({
+            query: 'MATCH (x:Oznaczenie)' +
+                   'WHERE x.Oznaczenie CONTAINS {preservativeHint}' +
+                   'RETURN x',
+            params: { 
+                preservativeHint: searchValue,
+            },
+        }, function (err, results) {
+
+            if (err) {
+                console.log(err);
+                res.status(400).send('<h4>Unexpecting error occured ' + err + '</h4>');
+            }
+
+            var result = results[0];
+            if (!result) {
+                res.status(204).send();
+            } else {
+                for(let i=0; i<results.length; i++){
+                    hintArr.push(results[i].x.properties.Oznaczenie);
+                }
+                let hints = {
+                    hints: hintArr
+                }
+                res.status(200).send(hints);
+
+            }
+        });
+
+    }
+    
+});
+
+app.post('/search/disease/hint', urlencodedParser, function(req,res){
+
+    var body = req.body;
+    var searchValue;
+
+    if (typeof body.hint === "undefined"){
+
+        let jsonString = JSON.stringify({"hint":"string_that_you_want_to_check_if_any_node_contains"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else{
+
+        searchValue = body.hint;
+
+        let hintArr = [];
+
+        db.cypher({
+            query: 'MATCH (x:Choroba)' +
+                   'WHERE x.Choroba CONTAINS {diseaseHint}' +
+                   'RETURN x',
+            params: { 
+                diseaseHint: searchValue,
+            },
+        }, function (err, results) {
+
+            if (err) {
+                console.log(err);
+                res.status(400).send('<h4>Unexpecting error occured ' + err + '</h4>');
+            }
+
+            var result = results[0];
+            if (!result) {
+                res.status(204).send();
+            } else {
+                for(let i=0; i<results.length; i++){
+                    hintArr.push(results[i].x.properties.Choroba);
+                }
+                let hints = {
+                    hints: hintArr
+                }
+                res.status(200).send(hints);
+
+            }
+        });
+
+    }
+    
+});
+
 app.listen(3000, function(err){
         console.log('Server Started on port 3000');
 });
