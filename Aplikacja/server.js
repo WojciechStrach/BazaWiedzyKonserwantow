@@ -6,6 +6,7 @@ const db = new neo4j.GraphDatabase('http://neo4j:baza@localhost:7474');
 const productModel = require('./models/product');
 const preservativeModel = require('./models/preservative');
 const diseaseModel = require('./models/disease');
+const token = 'Z69DWMsps0BIPFr8ccAKfsI6vc7SWPMB';
 
 const app = express();
 
@@ -640,6 +641,36 @@ app.post('/search/disease/hint', urlencodedParser, function(req,res){
 
     }
     
+});
+
+app.post('/add/product', urlencodedParser, function(req,res){
+
+    var body = req.body;
+
+    if(typeof body.token === "undefined"){
+
+        let jsonString = JSON.stringify({"token":"API_acces_token","add":"Object_of_product_that_you_want_to_add"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else if(typeof body.add === "undefined"){
+
+        let jsonString = JSON.stringify({"token":"API_acces_token","add":"Object_of_product_that_you_want_to_add"});
+        let response = 'JSON data are not valid, please provide data in ' + jsonString + ' format';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else if(body.token !== token){
+
+        let response = 'Provided token is incorrect, please provide correct token';
+
+        res.status(400).send('<h4>' + response + '</h4>');
+
+    }else{
+        //TODO
+    }
+
 });
 
 app.listen(3000, function(err){
